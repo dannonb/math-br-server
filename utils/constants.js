@@ -12,6 +12,12 @@ export const gameTypes = {
     RANDOM: 'RANDOM'
 }
 
+export const gameStatus = {
+    INLOBBY: 'INLOBBY',
+    INPROGRESS: 'INPROGRESS',
+    FINISHED: 'FINISHED'
+}
+
 export const difficulties = {
     EASY: 'EASY',
     MEDIUM: 'MEDIUM',
@@ -45,8 +51,8 @@ export const socketEvents = {
         playerJoinedBattleRoyaleLobby: 'playerJoinedBattleRoyaleLobby',
         playerJoinedDeathmatchLobby: 'playerJoinedDeathmatchLobby',
     },
-    gameEvents: {
-
+    customGameEvents: {
+        startCustomGame: 'startCustomGame'
     }
 }
 

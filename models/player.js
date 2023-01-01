@@ -10,7 +10,7 @@ const filter = new Filter()
 const playerSchema = new mongoose.Schema({
     currentSocketId: {
         type: String,
-        default: ''
+        default: '' 
     },
     username: {
         type: String,
