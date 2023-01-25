@@ -4,6 +4,8 @@ import dotenv from 'dotenv'
 import cors from 'cors'
 import http from 'http'
 import { Server } from 'socket.io'
+import { Configuration, OpenAIApi } from "openai";
+
 
 import playerRouter from './routers/player.js'
 import statsRouter from './routers/stats.js'
@@ -11,16 +13,22 @@ import statsRouter from './routers/stats.js'
 import onConnection from './utils/events/onConnection.js'
 
 dotenv.config()
+
 const port = process.env.PORT || 8080
 
 const app = express()
 const server = http.createServer(app)
 
-const io = new Server(server, {
+export const io = new Server(server, {
     cors: {
         origin: 'http://localhost:3000'
     }
 })
+
+const configuration = new Configuration({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+export const openai = new OpenAIApi(configuration);
 
 app.use(cors())
 app.use(express.json({ extended: true }))

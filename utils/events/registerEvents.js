@@ -1,13 +1,21 @@
 import { socketEvents } from '../constants.js'
+
 import { 
     sendFriendRequest, 
     acceptFriendRequest, 
     rejectFriendRequest 
 } from './eventhandlers/friendEvents.js'
 
+import {
+    inviteFriendToCustomLobby,
+    createCustomGameLobby,
+    joinCustomLobby,
+    startCustomGame
+} from './eventhandlers/customGameEvents.js'
+
 const { friendEvents } = socketEvents
 
-const registerEvents = (socket) => {
+const registerEvents = (socket, io) => {
     // friend events
     socket.on(friendEvents.sendFriendRequest, sendFriendRequest)
     socket.on(friendEvents.acceptFriendRequest, acceptFriendRequest)

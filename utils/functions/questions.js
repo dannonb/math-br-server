@@ -1,6 +1,4 @@
-const random = (min, max) => {
-    return Math.floor(Math.random() * (max - min) + min);
-}
+import { randomNumber } from "./helpers"
 
 class Question {
     constructor(expression, answer) {
@@ -13,14 +11,14 @@ export const additionQuestion = (difficulty) => {
     let first, second, sum
 
     if (difficulty === 1) {
-        first = random(1, 50)
-        second = random(1, 50)
+        first = randomNumber(1, 50)
+        second = randomNumber(1, 50)
     } else if (difficulty === 2) {
-        first = random(50, 100)
-        second = random(50, 100)
+        first = randomNumber(50, 100)
+        second = randomNumber(50, 100)
     } else if (difficulty === 3) {
-        first = random(100, 999)
-        second = random(100, 999)
+        first = randomNumber(100, 999)
+        second = randomNumber(100, 999)
     }
 
     sum = first + second
@@ -35,14 +33,14 @@ export const subtractionQuestion = (difficulty) => {
     let first, second, difference
     
     if (difficulty === 1) {
-        first = random(1, 45)
-        second = random(first + 1, 50)
+        first = randomNumber(1, 45)
+        second = randomNumber(first + 1, 50)
     } else if (difficulty === 2) {
-        first = random(50, 95)
-        second = random(first + 1, 100)
+        first = randomNumber(50, 95)
+        second = randomNumber(first + 1, 100)
     } else if (difficulty === 3) {
-        first = random(100, 995)
-        second = random(first + 1, 999)
+        first = randomNumber(100, 995)
+        second = randomNumber(first + 1, 999)
     }
     
     difference = second - first
@@ -57,14 +55,14 @@ export const multiplicationQuestion = (difficulty) => {
     let first, second, product
     
     if (difficulty === 1) {
-        first = random(1, 12)
-        second = random(1, 12)
+        first = randomNumber(1, 12)
+        second = randomNumber(1, 12)
     } else if (difficulty === 2) {
-        first = random(10, 100)
+        first = randomNumber(10, 100)
         second = 10
     } else if (difficulty === 3) {
-        first = random(100, 999)
-        second = [10, 100, 1000][random(0, 2)]
+        first = randomNumber(100, 999)
+        second = [10, 100, 1000][randomNumber(0, 2)]
     }
 
     product = first * second
@@ -79,14 +77,14 @@ export const exponentQuestion = (difficulty) => {
     let base, exponent, power
     
     if (difficulty === 1) {
-        base = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100][random(0, 9)]
+        base = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100][randomNumber(0, 9)]
         exponent = 2
     } else if (difficulty === 2) {
-        base = random(1, 10)
-        exponent = random(2, 4)
+        base = randomNumber(1, 10)
+        exponent = randomNumber(2, 4)
     } else if (difficulty === 3) {
-        base = random(11, 100)
-        exponent = random(3, 5)
+        base = randomNumber(11, 100)
+        exponent = randomNumber(3, 5)
     }
 
     power = Math.pow(base, exponent)

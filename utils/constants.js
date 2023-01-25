@@ -12,16 +12,20 @@ export const gameTypes = {
     RANDOM: 'RANDOM'
 }
 
-export const gameStatus = {
-    INLOBBY: 'INLOBBY',
-    INPROGRESS: 'INPROGRESS',
-    FINISHED: 'FINISHED'
-}
-
 export const difficulties = {
     EASY: 'EASY',
     MEDIUM: 'MEDIUM',
     HARD: 'HARD'
+}
+
+export const ai = {
+    
+}
+
+export const gameStatus = {
+    INLOBBY: 'INLOBBY',
+    INPROGRESS: 'INPROGRESS',
+    FINISHED: 'FINISHED'
 }
 
 export const socketEvents = {
@@ -53,7 +57,13 @@ export const socketEvents = {
     },
     customGameEvents: {
         startCustomGame: 'startCustomGame'
+    },
+    gameEvents: {
+        eliminatedFromMatch: 'eliminatedFromMatch',
+        leaveMatch: 'leaveMatch',
+        submitAnswer: 'submitAnswer'
     }
+
 }
 
 export const acknowledgementStatus = {

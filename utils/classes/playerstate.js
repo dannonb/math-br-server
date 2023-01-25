@@ -1,8 +1,12 @@
+import { v4 as uuid4 } from 'uuid'
+
 class PlayerState {
-    constructor(room, username, socket) {
+    constructor(room, username, socket, isBot) {
+        this.playerStateId = uuid4()
         this.username = username 
         this.room = room
         this.socket = socket
+        this.isBot = isBot
         this.score = 0
         this.guesses = 0
         this.alive = true

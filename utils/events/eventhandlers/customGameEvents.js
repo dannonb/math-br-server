@@ -1,3 +1,5 @@
+import { io } from '../../../server.js' 
+
 import {
     gameStatus,
     socketEvents,
@@ -6,8 +8,6 @@ import {
 
 import Player from '../../../models/player.js'
 import Game from '../../../models/game.js'
-
-import { GameState, PlayerState } from '../../classes'
 
 const { joinEvents } = socketEvents
 
@@ -49,7 +49,7 @@ export const joinCustomLobby = async function ({ playerId, lobbyId, fromInvite }
             })
         }
 
-        const game = await Game.findOne({ name: lobbyId })
+        const game = await Game.findOne({ room: lobbyId })
         if (!game) {
             return cb({
                 status: acknowledgementStatus.error,
@@ -65,40 +65,19 @@ export const joinCustomLobby = async function ({ playerId, lobbyId, fromInvite }
         }
 
         socket.join(lobbyId)
+        game.players.push(playerId)
+        await game.save()
+
         if (fromInvite) {
             const invites = player.invites.filter(invite => invite !== lobbyId)
             player['invites'] = invites
             await player.save()
         }
-        socket.to(lobbyId).broadcast.emit(joinEvents.playerJoinedCustomLobby)
+        io.to(lobbyId).emit(joinEvents.playerJoinedCustomLobby)
         cb({
             status: acknowledgementStatus.success,
             message: `joining lobby: ${lobbyId}`
         })
-    } catch (e) {
-        console.log(e)
-    }
-}
-
-// export const joinCustomGame = async function ({ playerId, gameId }, cb) {
-//     const socket = this
-//     try {
-//         const player = await Player.findById(playerId)
-//         if (!player) {
-//             return cb({
-//                 status: acknowledgementStatus.error,
-//                 message: 'An error has occured.'
-//             })
-//         }
-//     } catch (e) {
-//         console.log(e)
-//     }
-// }
-
-export const startCustomGame = async function ({ ownerId, lobbyId }, cb) {
-    const socket = this
-    try {
-        socket.to(lobbyId).emit()
     } catch (e) {
         console.log(e)
     }
@@ -114,45 +93,70 @@ export const createCustomGameLobby = async function ({ ownerId, lobbyId, rules }
                 message: 'An error has occured.'
             })
         }
-        if (await Game.exists({ name: lobbyId })) {
+        if (await Game.exists({ room: lobbyId })) {
             return cb({
                 status: acknowledgementStatus.error,
                 message: 'Lobby with this name already exists.'
             })
         }
-        const gameState = new GameState(
-            lobbyId, 
-            rules.gameMode, 
-            rules.rounds, 
-            rules.difficulty, 
-            rules.type, 
-            owner.username
-        )
-
-        const playerState = new PlayerState(
-            lobbyId, 
-            owner.username, 
-            socket
-        )
-
-        gameState.addPlayer(playerState)
 
         const newGameData = {
             status: gameStatus.INLOBBY,
             name: lobbyId,
-            gameState,
+            owner: ownerId,
+            gameRules: {
+                room: lobbyId,
+                gameMode: rules.gameMode,
+                isPractice: rules.isPractice,
+                useBots: rules.useBots,
+                rounds: rules.rounds,
+                eliminatePlayers: rules.eliminatePlayers,
+                difficulty: rules.difficulty,
+                type: rules.type,
+                creator: owner.username
+            },
             players: [ownerId]
         }
         const game = new Game(newGameData)
         await game.save()
 
         socket.join(lobbyId)
-        socket.to(lobbyId).broadcast.emit(joinEvents.playerJoinedCustomLobby)
+        socket.to(lobbyId).emit(joinEvents.playerJoinedCustomLobby)
         cb({
             status: acknowledgementStatus.success,
             message: `joining lobby: ${lobbyId}`
         })
 
+    } catch (e) {
+        console.log(e)
+    }
+}
+
+export const startCustomGame = async function ({ ownerId, lobbyId }, cb) {
+    const socket = this
+    try {
+        const game = await Game.findOne({ room: lobbyId })
+        if (!game) {
+            return cb({
+                status: acknowledgementStatus.error,
+                message: 'Cannot start game.'
+            })
+        }
+
+        if (game.status !== gameStatus.INLOBBY) {
+            return cb({ 
+                status: acknowledgementStatus.error,
+                message: 'Game has already been started.'
+            })
+        }
+
+        if (game.owner !== ownerId) {
+            return cb({
+                status: acknowledgementStatus.error,
+                message: 'Only the match creator can start the game'
+            })
+        }
+        
     } catch (e) {
         console.log(e)
     }

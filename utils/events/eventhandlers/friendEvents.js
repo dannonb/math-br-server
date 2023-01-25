@@ -7,42 +7,52 @@ import Player from '../../../models/player.js'
 
 const { friendEvents } = socketEvents
 
-export const sendFriendRequest = async function (sender, receiver, cb) {
+export const sendFriendRequest = async function ({ senderId, receiverId }, cb) {
     const socket = this
-    const potentialFriend = await Player.findById(receiver._id)
-    if (sender._id === receiver._id) {
+    const sender = await Player.findById(senderId)
+    const potentialFriend = await Player.findById(receiverId)
+    if (!potentialFriend) {
+        return cb({
+            status: acknowledgementStatus.error,
+            message: 'Friend does not exist.'
+        })
+    }
+    if (senderId === receiverId) {
         return cb({
             status: acknowledgementStatus.error,
             message: 'You cannot send yourself friend requests. I am sorry, I hope things turn around for you.'
         })
     }
-    if (potentialFriend.friends.includes(sender._id)) {
+    if (potentialFriend.friends.includes(senderId)) {
         return cb({
             status: acknowledgementStatus.error,
             message: 'This player is already your friend.'
         })
     }
-    if (potentialFriend.friendRequests.includes(sender._id)) {
+    if (potentialFriend
+        .friendRequests
+        .findIndex(request => request.player.toString() === senderId) !== -1 
+        ) {
         return cb({
             status: acknowledgementStatus.error,
             message: 'Request has already been sent.'
         })
     }
-    potentialFriend.friendRequests.push({ player: sender._id, seen: false })
+    potentialFriend.friendRequests.push({ player: senderId, seen: false })
     await potentialFriend.save()
-    socket.to(receiver.currentSocketId).emit(friendEvents.recieveFriendRequest)
+    socket.to(potentialFriend.currentSocketId).emit(friendEvents.recieveFriendRequest, sender.username)
     cb({
         status: acknowledgementStatus.success,
-        message: 'Request sent.'
+        message: `Request sent to ${potentialFriend.username}.`
     })
 }
 
 
-export const acceptFriendRequest = async function (friendRequestSender, friendRequestReceiver, cb) {
+export const acceptFriendRequest = async function ({ senderId, receiverId }, cb) {
     const socket = this
     try {
-        const sender = await Player.findById(friendRequestSender._id)
-        const receiver = await Player.findById(friendRequestReceiver._id)
+        const sender = await Player.findById(senderId)
+        const receiver = await Player.findById(receiverId)
 
         if (!sender) {
             return cb({
@@ -58,16 +68,15 @@ export const acceptFriendRequest = async function (friendRequestSender, friendRe
             })
         }
 
-        const friendRequests = await receiver.friendRequests.filter(request => request.player !== friendRequestSender._id)
-        receiver.friends.push(friendRequestSender._id)
-        sender.friends.push(friendRequestReceiver._id)
+        const friendRequests = await receiver.friendRequests.filter(request => request.player.toString() !== senderId)
         receiver['friendRequests'] = friendRequests
+        receiver.friends.push(senderId)
+        sender.friends.push(receiverId)
         Promise.all([
             await receiver.save(),
             await sender.save()
         ])
-        const friendCurrentSocketId = sender.currentSocketId
-        socket.to(friendCurrentSocketId).emit(friendEvents.friendRequestAccepted) 
+        socket.to(sender.currentSocketId).emit(friendEvents.friendRequestAccepted, receiver.username) 
         cb({
             status: acknowledgementStatus.success,
             message: `${sender.username} is now your friend.`
@@ -77,14 +86,14 @@ export const acceptFriendRequest = async function (friendRequestSender, friendRe
     }
 }
 
-export const rejectFriendRequest = async function (friendRequestSender, friendRequestReceiver, cb) {
+export const rejectFriendRequest = async function ({ senderId, receiverId }, cb) {
     const socket = this
     try {
-        const sender = await Player.findById(friendRequestSender._id)
-        const receiver = await Player.findById(friendRequestReceiver._id)
+        const sender = await Player.findById(senderId)
+        const receiver = await Player.findById(receiverId)
 
         const friendRequests = await receiver.friendRequests.filter(request => {
-            return request.player !== friendRequestSender._id
+            return request.player.toString() !== senderId
         })
         receiver['friendRequests'] = friendRequests
         await receiver.save()
@@ -102,8 +111,7 @@ export const rejectFriendRequest = async function (friendRequestSender, friendRe
                 message: 'This player is already your friend.'
             })
         }
-        const friendCurrentSocketId = sender.currentSocketId
-        socket.to(friendCurrentSocketId).emit(friendEvents.friendRequestRejected)
+        socket.to(sender.currentSocketId).emit(friendEvents.friendRequestRejected, receiver.username)
         cb({
             status: acknowledgementStatus.success,
             message: `Friend request from ${sender.username} was rejected.`

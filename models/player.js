@@ -44,6 +44,9 @@ const playerSchema = new mongoose.Schema({
             }
         }
     },
+    profileImageUrl: {
+        type: String
+    },
     friends: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Player'
@@ -90,7 +93,6 @@ playerSchema.virtual('stats', {
 playerSchema.methods.generateAuthToken = async function () {
     const player = this
     const token = jwt.sign({ _id: player._id.toString() }, 'thisismynewcourse')
-    console.log(token)
 
     player.tokens = player.tokens.concat({ token })
     await player.save()

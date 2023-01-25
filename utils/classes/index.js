@@ -1,4 +1,5 @@
-import GameState from "./gamestate";
-import PlayerState from "./playerstate";
+import GameState from "./gamestate.js";
+import PlayerState from "./playerstate.js";
+import AIController from "./ai.js";
 
-export { GameState, PlayerState }
+export { GameState, PlayerState, AIController }

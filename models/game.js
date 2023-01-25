@@ -5,12 +5,21 @@ const gameSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    name: {
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Player'
+    },
+    room: {
         type: String,
+        required: true,
+        unique: true
+    },
+    rules: {
+        type: mongoose.Schema.Types.Mixed,
         required: true
     },
-    gameState: {
-        type: mongoose.Schema.Types.Mixed
+    state: {
+        type: mongoose.Schema.Types.Mixed,
     },
     players: [{
         type: mongoose.Schema.Types.ObjectId,

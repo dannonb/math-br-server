@@ -27,6 +27,10 @@ const statsSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    highestStreak: {
+        type: Number,
+        default: 0
+    },
     rankedScore: {
         type: Number,
         default: 0
