@@ -1,0 +1,23 @@
+{
+    "tests": {
+        "registerSocketId": {
+            "playerId": "63b4e77066e2199f8fbbf9b0"
+        },
+        "joinCustomLobby": {
+            "playerId": "63b4e77066e2199f8fbbf9b0",
+            "lobbyId": "123",
+            "fromInvite": false 
+        },
+        "createCustomGameLobby": {
+            "ownerId": "63b4e77066e2199f8fbbf9b0",
+            "lobbyId": "test game 2",
+            "rules": {
+                "isPractice": true
+            }
+        },
+        "startCustomGame": {
+            "ownerId": "63b4e77066e2199f8fbbf9b0",
+            "lobbyId": "test game"
+        } 
+    }
+}

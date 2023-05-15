@@ -1,4 +1,4 @@
-import { randomNumber } from "./helpers"
+import { randomNumber } from "./helpers.js"
 
 class Question {
     constructor(expression, answer) {

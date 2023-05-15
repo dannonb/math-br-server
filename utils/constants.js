@@ -9,7 +9,13 @@ export const gameTypes = {
     SUBTRACTION: 'SUBTRACTION',
     MULTIPLICATION: 'MULTIPLICATON',
     DIVISION: 'DIVISION',
-    RANDOM: 'RANDOM'
+    RANDOM: 'RANDOM',
+    TRIVIA: 'TRIVIA'
+}
+
+export const triviaCategories = {
+    GeneralKnowledge: 9,
+    Music: 12
 }
 
 export const difficulties = {
@@ -18,15 +24,58 @@ export const difficulties = {
     HARD: 'HARD'
 }
 
+export const defaultGameSettings = {
+    battleRoyale: {
+        maxPlayers: 100
+    },
+    deathMatch: {
+        maxPlayers: 2
+    }
+}
+
 export const ai = {
     
 }
 
+export const times = {
+    timeToRemoveGamesLeftInLobby: 5 * 60 * 60 * 1000
+}
+
 export const gameStatus = {
     INLOBBY: 'INLOBBY',
+    READY: 'READY',
     INPROGRESS: 'INPROGRESS',
     FINISHED: 'FINISHED'
 }
+
+export const playerStatus = {
+    IDLE: 'IDLE',
+    OFFLINE: 'OFFLINE',
+    MATCHMAKING: 'MATCHMAKING',
+    INGAME: 'INGAME'
+}
+
+export const ranks = {
+    UNRANKED: 'UNRANKED',
+    BRONZE: 'BRONZE',
+    SILVER: 'SILVER',
+    GOLD: 'GOLD',
+    PLATINUM: 'PLATINUM',
+    DIAMOND: 'DIAMOND',
+    CHAMPION: 'CHAMPION',
+    MATHEMATICIAN: 'MATHEMATICIAN'
+}
+
+export const rankedOrder = [
+    ranks.UNRANKED, 
+    ranks.BRONZE, 
+    ranks.SILVER, 
+    ranks.GOLD,
+    ranks.PLATINUM,
+    ranks.DIAMOND,
+    ranks.CHAMPION,
+    ranks.MATHEMATICIAN
+]
 
 export const socketEvents = {
     connectEvents: {
@@ -56,14 +105,28 @@ export const socketEvents = {
         playerJoinedDeathmatchLobby: 'playerJoinedDeathmatchLobby',
     },
     customGameEvents: {
-        startCustomGame: 'startCustomGame'
+        startCustomGame: 'startCustomGame',
+        inviteFriendToCustomLobby: 'inviteFriendToCustomLobby',
+        joinCustomLobby: 'joinCustomLobby',
+        createCustomGameLobby: 'createCustomGameLobby',
+        creatorStartedCustomGame: 'creatorStartedCustomGame'
     },
     gameEvents: {
-        eliminatedFromMatch: 'eliminatedFromMatch',
+        battleRoyale: {
+            eliminatedFromMatch: 'eliminatedFromMatch',
+            joinBattleRoyaleQueue: 'joinBattleRoyaleQueue',
+            leaveBattleRoyaleQueue: 'leaveBattleRoyaleQueue'
+        },
+        deathmatch: {
+            joinDeathmatchQueue: 'joinDeathmatchQueue',
+            leaveDeathmatchQueue: 'leaveDeathmatchQueue'
+        },
         leaveMatch: 'leaveMatch',
         submitAnswer: 'submitAnswer'
+    },
+    statusEvents: {
+        updateStatus: 'updateStatus'
     }
-
 }
 
 export const acknowledgementStatus = {

@@ -1,4 +1,4 @@
-import { socketEvents } from '../constants.js'
+import { socketEvents, playerStatus } from '../constants.js'
 import registerEvents from './registerEvents.js'
 
 import Player from '../../models/player.js'
@@ -6,7 +6,12 @@ import Player from '../../models/player.js'
 const { connectEvents } = socketEvents
 
 const onConnection = async (socket) => {
-    socket.on(connectEvents.registerSocketId, async (playerId) => {
+    const player = await Player.findBySocketId(socket.id)
+    if (player) {
+        player.status = playerStatus.IDLE
+        await player.save()
+    }
+    socket.on(connectEvents.registerSocketId, async ({ playerId }) => {
         try {
             const player = await Player.findById(playerId)
             player.currentSocketId = socket.id

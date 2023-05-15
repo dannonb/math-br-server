@@ -19,7 +19,6 @@ class GameInstance {
     async setGameStatus(status) {
         this.gameData.status = status
         this.gameState.status = status
-        await this.gameData.save()
     }
 
     async init() {
@@ -27,8 +26,8 @@ class GameInstance {
             const botPlayerStates = this.gameState.aiController.createBotPlayerStates()
             this.gameState.players.concat(botPlayerStates)
         }
+        this.setGameStatus(gameStatus.READY)
         this.saveCurrentStateInDb()
-        this.setGameStatus(gameStatus.INPROGRESS)
         io.to(this.gameState.room).emit()
     }
 
@@ -41,7 +40,9 @@ class GameInstance {
     }
 
     async playGame() {
-
+        this.setGameStatus(gameStatus.INPROGRESS)
+        this.saveCurrentStateInDb()
+        io.to(this.gameState.room).emit()
     }
 }
 

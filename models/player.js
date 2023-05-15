@@ -5,12 +5,26 @@ import jwt from 'jsonwebtoken'
 import Stats from './stats.js'
 import Validator from 'validator'
 
+import { playerStatus } from '../utils/constants.js'
+
 const filter = new Filter()
 
 const playerSchema = new mongoose.Schema({
     currentSocketId: {
         type: String,
         default: '' 
+    },
+    currentQueueId: {
+        type: String,
+        default: ''
+    },
+    currentGameId: {
+        type: String,
+        default: ''
+    },
+    status: {
+        type: String,
+        default: playerStatus.IDLE
     },
     username: {
         type: String,
@@ -87,7 +101,8 @@ const playerSchema = new mongoose.Schema({
 playerSchema.virtual('stats', {
     ref: 'Stats',
     localField: '_id',
-    foreignField: 'player'
+    foreignField: 'player',
+    justOne: true
 })
 
 playerSchema.methods.generateAuthToken = async function () {
@@ -111,6 +126,16 @@ playerSchema.statics.findByCredentials = async (username, password) => {
 
     if (!isMatch) {
         throw new Error('Unable to login')
+    }
+
+    return user
+}
+
+playerSchema.statics.findBySocketId = async (socketId) => {
+    const user = await Player.findOne({ currentSocketId: socketId })
+
+    if (!user) {
+        throw new Error('Unable to find user')
     }
 
     return user

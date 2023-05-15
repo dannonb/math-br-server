@@ -6,11 +6,15 @@ import http from 'http'
 import { Server } from 'socket.io'
 import { Configuration, OpenAIApi } from "openai";
 
+import runScheduledCleanupTasks from './utils/functions/scheduledTasks.js'
+
 
 import playerRouter from './routers/player.js'
 import statsRouter from './routers/stats.js'
 
 import onConnection from './utils/events/onConnection.js'
+
+import { socketAuth } from './middleware/socketMiddleware.js'
 
 dotenv.config()
 
@@ -24,6 +28,9 @@ export const io = new Server(server, {
         origin: 'http://localhost:3000'
     }
 })
+
+// authorization for socket requests
+io.use(socketAuth)
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,
@@ -41,13 +48,13 @@ app.get('/', (req, res) => {
     res.send({ Hello: "World" })
 })
 
-io.on('connection', onConnection)
-
 mongoose.connect(process.env.DB_URL)
     .then(() => {
         server.listen(port, () => {
             console.log(`app is listening at http://localhost:${port}`)
         })
+        io.on('connection', onConnection)
+        runScheduledCleanupTasks()
     }).catch((e) => {
         console.log(e)
     })

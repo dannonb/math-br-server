@@ -78,19 +78,37 @@ router.get('/players/friends', auth, async (req, res) => {
 router.patch('/players/generate-profile-image', auth, async (req, res) => {
     try {
         const openaiResponse = await openai.createImage({
-            prompt: "cartoon person doing math",
+            prompt: "green cartoon person doing math",
             n: 1,
             size: "256x256",
           });
         const image_url = openaiResponse.data.data[0].url
         req.player.profileImageUrl = image_url
         await req.player.save()
-        req.status(200).send(req.player)
+        res.status(200).send(req.player)
     } catch (error) {
         if (error.response) {
-            req.status(error.response.status).send({ error: error.response.data })
+            res.status(error.response.status).send({ error: error.response.data })
           } else {
-            req.status(500).send({ error: error.message })
+            res.status(500).send({ error: error.message })
+          }
+    }
+})
+
+router.get('/players/testpic', async (req, res) => {
+    try {
+        const openaiResponse = await openai.createImage({
+            prompt: "cute and adorable polar bear, by Pixar, glacial background, snow, sunset, lake, photo, super detailed, extremly realistic, 8K --v 4 --ar 3:4",
+            n: 1,
+            size: "1024x1024",
+          });
+        const image_url = openaiResponse.data.data[0].url 
+        res.send(image_url) 
+    } catch (error) {
+        if (error.response) {
+            res.status(error.response.status).send({ error: error.response.data })
+          } else {
+            res.status(500).send({ error: error.message })
           }
     }
 })

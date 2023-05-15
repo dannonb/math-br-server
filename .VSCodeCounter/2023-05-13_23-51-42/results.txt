@@ -1,0 +1,68 @@
+Date : 2023-05-13 23:51:42
+Directory : c:\Users\danno\OneDrive\Desktop\MBRServer
+Total : 32 files,  1666 codes, 57 comments, 251 blanks, all 1974 lines
+
+Languages
++------------+------------+------------+------------+------------+------------+
+| language   | files      | code       | comment    | blank      | total      |
++------------+------------+------------+------------+------------+------------+
+| JavaScript |         30 |      1,614 |         57 |        250 |      1,921 |
+| JSON       |          2 |         52 |          0 |          1 |         53 |
++------------+------------+------------+------------+------------+------------+
+
+Directories
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                     | files      | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                        |         32 |      1,666 |         57 |        251 |      1,974 |
+| . (Files)                                                                                |          2 |         73 |          1 |         16 |         90 |
+| middleware                                                                               |          2 |         37 |          0 |          9 |         46 |
+| models                                                                                   |          3 |        245 |          0 |         34 |        279 |
+| routers                                                                                  |          3 |        118 |          0 |         24 |        142 |
+| utils                                                                                    |         22 |      1,193 |         56 |        168 |      1,417 |
+| utils (Files)                                                                            |          4 |        325 |         31 |         37 |        393 |
+| utils\classes                                                                            |          5 |        211 |          0 |         25 |        236 |
+| utils\events                                                                             |          7 |        475 |         13 |         66 |        554 |
+| utils\events (Files)                                                                     |          2 |         57 |          6 |         15 |         78 |
+| utils\events\eventhandlers                                                               |          5 |        418 |          7 |         51 |        476 |
+| utils\functions                                                                          |          6 |        182 |         12 |         40 |        234 |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| filename                                                                                 | language   | code       | comment    | blank      | total      |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| c:\Users\danno\OneDrive\Desktop\MBRServer\middleware\auth.js                             | JavaScript |         18 |          0 |          5 |         23 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\middleware\socketMiddleware.js                 | JavaScript |         19 |          0 |          4 |         23 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\models\game.js                                 | JavaScript |         42 |          0 |          6 |         48 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\models\player.js                               | JavaScript |        147 |          0 |         24 |        171 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\models\stats.js                                | JavaScript |         56 |          0 |          4 |         60 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\package.json                                   | JSON       |         29 |          0 |          1 |         30 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\routers\game.js                                | JavaScript |          4 |          0 |          5 |          9 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\routers\player.js                              | JavaScript |        102 |          0 |         14 |        116 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\routers\stats.js                               | JavaScript |         12 |          0 |          5 |         17 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\server.js                                      | JavaScript |         44 |          1 |         15 |         60 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\classes\ai.js                            | JavaScript |         30 |          0 |          8 |         38 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\classes\gameInstance.js                  | JavaScript |         38 |          0 |          9 |         47 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\classes\gamestate.js                     | JavaScript |         94 |          0 |          5 |         99 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\classes\index.js                         | JavaScript |          4 |          0 |          1 |          5 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\classes\playerstate.js                   | JavaScript |         45 |          0 |          2 |         47 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\constants.js                             | JavaScript |        122 |          0 |         13 |        135 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\events\eventhandlers\customGameEvents.js | JavaScript |        167 |          3 |         19 |        189 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\events\eventhandlers\disconnect.js       | JavaScript |         19 |          4 |          5 |         28 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\events\eventhandlers\friendEvents.js     | JavaScript |        110 |          0 |         13 |        123 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\events\eventhandlers\gameEvents.js       | JavaScript |        110 |          0 |         11 |        121 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\events\eventhandlers\statusChange.js     | JavaScript |         12 |          0 |          3 |         15 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\events\onConnection.js                   | JavaScript |         22 |          0 |          4 |         26 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\events\registerEvents.js                 | JavaScript |         35 |          6 |         11 |         52 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\functions\errorhandling.js               | JavaScript |          0 |          0 |          1 |          1 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\functions\gamefunctions.js               | JavaScript |         19 |          0 |          2 |         21 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\functions\helpers.js                     | JavaScript |         73 |          0 |         12 |         85 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\functions\questions.js                   | JavaScript |         79 |         12 |         21 |        112 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\functions\queueCleanup.js                | JavaScript |          0 |          0 |          1 |          1 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\functions\scheduledTasks.js              | JavaScript |         11 |          0 |          3 |         14 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\matchmaking.js                           | JavaScript |        179 |         31 |         24 |        234 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\restrictedwords.js                       | JavaScript |          1 |          0 |          0 |          1 |
+| c:\Users\danno\OneDrive\Desktop\MBRServer\utils\testJSON.json                            | JSON       |         23 |          0 |          0 |         23 |
+| Total                                                                                    |            |      1,666 |         57 |        251 |      1,974 |
++------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+

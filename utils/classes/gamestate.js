@@ -17,18 +17,17 @@ class GameState {
         elimiatePlayers,
         difficulty = difficulties.MEDIUM,
         type = gameTypes.CLASSIC,
-        creator = "none",
+        creator = null,
         aiController = null
     ) {
-        this.game_id = uuid4();
+        this.game_id = room
         this.room = room
         this.mode = gameMode
         this.isPractice = isPractice
         this.useBots = useBots
         this.players = []
-        this.playerCount = this.players.length
         this.rounds = rounds
-        this.eliminatePlayers = gameMode === gameModes.DEATHMATCH ? false : elimiatePlayers // keeps all players for entire game if true
+        this.eliminatePlayers = elimiatePlayers // keeps all players for entire game if true
         this.type = type
         this.difficulty = difficulty
         this.status = gameStatus.INLOBBY
@@ -36,8 +35,9 @@ class GameState {
         this.creator = creator
         this.aiController = aiController
     }
+    getPlayerCount() { return this.players.length }
     serialize() {
-        return JSON.stringify({
+        return {
             game_id: this.game_id,
             room: this.room,
             mode: this.mode,
@@ -57,7 +57,7 @@ class GameState {
                     streak: player.streak
                 }
             }),
-            playerCount: this.playerCount,
+            playerCount: this.getPlayerCount(),
             rounds: this.rounds,
             elimnatePlayers: this.eliminatePlayers,
             type: this.type,
@@ -65,8 +65,8 @@ class GameState {
             status: this.status,
             currentRound: this.currentRound,
             creator: this.creator,
-            bots: this.aiController.getBots()
-        })
+            bots: !!this.aiController ? this.aiController.getBots() : null
+        }
     }
     addPlayer(playerState) {
         const index = this.players.findIndex(player => player.id === playerState.id)

@@ -31,7 +31,7 @@ const statsSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    rankedScore: {
+    mmr: {
         type: Number,
         default: 0
     }, 

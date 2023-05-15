@@ -1,8 +1,8 @@
 import { uniqueNamesGenerator, adjectives, colors, animals } from "unique-names-generator"
 
-import { randomNumber } from "../functions/helpers"
-import { difficulties } from "../constants"
-import PlayerState from "./playerstate"
+import { randomNumber } from "../functions/helpers.js"
+import { difficulties } from "../constants.js"
+import PlayerState from "./playerstate.js"
 
 class AIController {
     constructor(
@@ -30,6 +30,8 @@ class AIController {
         }
         return playerStates
     }
+
+    
 
 }
 
