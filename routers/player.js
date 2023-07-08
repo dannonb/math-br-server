@@ -7,13 +7,18 @@ import Player from '../models/player.js'
 import Stats from '../models/stats.js'
 const router = new express.Router()
 
-router.post('/players/signup', async (req, res) => {
+router.post('/players/register', async (req, res) => {
     const player = new Player(req.body)
     const stats = new Stats({ player: player._id })
     try {
-        await player.save()
-        await stats.save()
+        Promise.all([
+            await player.save(),
+            await stats.save(),
+            await player.populate('stats')
+        ])
         const token = await player.generateAuthToken()
+        console.log("PLAYER: ", player)
+        console.log("STATS: ", player.stats)
         res.status(201).send({ player, token })
     } catch (e) {
         if (e._message) {
@@ -27,9 +32,9 @@ router.post('/players/signup', async (req, res) => {
 
 router.post('/players/login', async (req, res) => {
     try {
-        const player = await Player.findByCredentials(req.body.username, req.body.password)
+        const player = await Player.findByCredentials(req.body.username, req.body.password).populate('stats')
         const token = await player.generateAuthToken()
-        res.send({ player, token })
+        res.status(200).send({ player, token })
     } catch (e) {
         res.status(400).send({ error: e._message })
     }
@@ -48,7 +53,7 @@ router.post('/players/logout', auth, async (req, res) => {
     }
 })
 
-router.post('/players/logoutAll', auth, async (req, res) => {
+router.post('/players/logout-all', auth, async (req, res) => {
     try {
         req.player.tokens = []
         await req.player.save()
@@ -60,13 +65,24 @@ router.post('/players/logoutAll', auth, async (req, res) => {
 
 router.get('/players/profile', auth, async (req, res) => {
     try {
-
+        const player = await req.player.populate('stats')
+        console.log(req.player)
+        res.send({ player })
     } catch (e) {
         res.status(500).send({error: e.message})
     }
 })
 
 router.get('/players/friends', auth, async (req, res) => {
+    try {
+        const player = await req.player.populate('friends')
+        res.status(200).send({ friends: player.friends })
+    } catch (e) {
+        res.status(500).send({error: e.message})
+    }
+})
+
+router.get('/players/friends/:id', auth, async (req, res) => {
     try {
         const player = await req.player.populate('friends')
         res.status(200).send({ friends: player.friends })
@@ -98,7 +114,7 @@ router.patch('/players/generate-profile-image', auth, async (req, res) => {
 router.get('/players/testpic', async (req, res) => {
     try {
         const openaiResponse = await openai.createImage({
-            prompt: "cute and adorable polar bear, by Pixar, glacial background, snow, sunset, lake, photo, super detailed, extremly realistic, 8K --v 4 --ar 3:4",
+            prompt: "background for math and logic game",
             n: 1,
             size: "1024x1024",
           });

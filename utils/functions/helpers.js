@@ -1,14 +1,17 @@
 import { v4 as uuid4 } from 'uuid'
+import axios from 'axios'
 
 import { io } from "../../server.js"
-import { 
-    gameModes, 
-    ranks, 
-    gameStatus, 
-    difficulties, 
+import {
+    gameModes,
+    ranks,
+    gameStatus,
+    difficulties,
     gameTypes,
-    socketEvents, 
-    acknowledgementStatus
+    socketEvents,
+    acknowledgementStatus,
+    defaultGameSettings,
+    triviaCategories
 } from "../constants.js";
 
 import { getPlayersFromQueue } from '../matchmaking.js';
@@ -29,28 +32,27 @@ export const getSocketFromId = (socketId) => {
 }
 
 export const determineRank = (mmr) => {
-    console.log(typeof mmr)
     if (typeof mmr !== 'number') {
         throw new Error("MMR used was not a number")
     }
-    switch(mmr) {
-        case mmr > 100_000:
-          return ranks.MATHEMATICIAN
-          case mmr > 50_000:
-            return ranks.CHAMPION  
-        case mmr > 30_000:
-            return ranks.DIAMOND
-        case mmr > 10_000:
-            return ranks.PLATINUM
-        case mmr > 5_000:
-            return ranks.GOLD
-        case mmr > 1_000:
-            return ranks.SILVER
-        case mmr > 1:
-            return ranks.BRONZE
-        default:
-          return ranks.UNRANKED
-      }
+
+    if (mmr >= 100_000) {
+        return ranks.GENIUS
+    } else if (mmr >= 50_000) {
+        return ranks.CHAMPION
+    } else if (mmr >= 30_000) {
+        return ranks.DIAMOND
+    } else if (mmr >= 10_000) {
+        return ranks.PLATINUM
+    } else if (mmr >= 5_000) {
+        return ranks.GOLD
+    } else if (mmr >= 1_000) {
+        return ranks.SILVER
+    } else if (mmr >= 1) {
+        return ranks.BRONZE
+    } else {
+        return ranks.UNRANKED
+    }
 }
 
 export const createAIController = (rules, playerCount) => {
@@ -70,35 +72,40 @@ export const createAIController = (rules, playerCount) => {
 }
 
 export const createGameAndPlayerStates = (game) => {
-    const { 
-        room, 
-        rules, 
-        creator, 
-        players 
+    const {
+        room,
+        rules,
+        creator,
+        players
     } = game
 
     const aiController = createAIController(rules, players.length)
 
     const gameState = new GameState(
-        room, 
+        room,
         rules.gameMode,
         rules.isPractice,
-        rules.useBots, 
-        rules.rounds, 
-        rules.eliminatePlayers, 
-        rules.difficulty, 
-        rules.type, 
+        rules.useBots,
+        rules.rounds,
+        rules.eliminatePlayers,
+        rules.difficulty,
+        rules.type,
         creator,
         aiController
     )
 
     players.forEach(async player => {
+        delete player.email
+        delete player.password
+        delete player.friendRequests
+        delete player.invites
+        delete player.tokens
         const playerState = new PlayerState(
             room,
-            player.username, 
+            player.username,
             getSocketFromId(player.currentSocketId),
             false
-        ) 
+        )
         gameState.addPlayer(playerState)
     })
 
@@ -107,7 +114,12 @@ export const createGameAndPlayerStates = (game) => {
 
 export const createPublicMatchGameStateAndLobby = async (queue) => {
     const lobby = queue.gamemode + "-" + uuid4()
-    const numOfPlayers = queue.gamemode === gameModes.BATTLEROYALE ? 100 : 2
+    const numOfPlayers =
+        queue.gamemode === gameModes.BATTLEROYALE
+            ? defaultGameSettings.battleRoyale.maxPlayers : defaultGameSettings.deathMatch.maxPlayers
+    const defaultRules =
+        queue.gamemode === gameModes.BATTLEROYALE
+            ? defaultGameSettings.battleRoyale.rules : defaultGameSettings.deathMatch.rules
     const gameData = {
         status: gameStatus.INLOBBY,
         room: lobby,
@@ -115,12 +127,7 @@ export const createPublicMatchGameStateAndLobby = async (queue) => {
         rules: {
             room: lobby,
             gameMode: queue.gamemode,
-            isPractice: false,
-            useBots: false,
-            rounds: 3,
-            eliminatePlayers: true,
-            difficulty: difficulties.MEDIUM,
-            type: gameTypes.CLASSIC
+            ...defaultRules
         },
         players: getPlayersFromQueue(queue, numOfPlayers).map((player) => player.playerId)
     }
@@ -130,19 +137,15 @@ export const createPublicMatchGameStateAndLobby = async (queue) => {
 
         await game.populate('players')
 
-        console.log(game)
-
         const gameState = createGameAndPlayerStates(game)
-        console.log("GAMESTATE", gameState)
-        const event = 
-            gameState.gamemode === gameModes.BATTLEROYALE 
+
+        const event =
+            gameState.gamemode === gameModes.BATTLEROYALE
                 ? joinEvents.joinBattleRoyaleLobby : joinEvents.joinDeathmatchLobby
         gameState.players.forEach((player) => {
             player.socket.join(lobby)
             player.socket.to(player.socket.id).emit(event)
         })
-
-        console.log("RETURNIONG")
 
         const returnItem = {
             gameState,
@@ -159,7 +162,7 @@ export const createPublicMatchGameStateAndLobby = async (queue) => {
 
 export const startPublicMatch = (gameState, gameData) => {
     if (!gameState || !gameData) return;
-    
+
     const game = new GameInstance(gameState, gameData)
     game.init()
     setTimeout(() => {
@@ -168,13 +171,13 @@ export const startPublicMatch = (gameState, gameData) => {
         }
     }, 3000)
 
-    
+
 }
 
-export const rejoinPublicMatch = async ({ matchId }, cb) => {
-    // rejoins match that is in progress if player gets disconnected
+export const rejoinPublicMatch = async function({ matchId }, cb) {
+    const socket = this
     try {
-        const game  = await Game.find({ room: matchId })
+        const game = await Game.find({ room: matchId })
         if (!game) {
             return cb({
                 status: acknowledgementStatus.error,
@@ -186,8 +189,43 @@ export const rejoinPublicMatch = async ({ matchId }, cb) => {
                 message: `Game is already over.`
             })
         }
-        
+
+        // rejoin the match
     } catch (e) {
         console.log(e)
     }
+}
+
+export const getRandomTriviaCategory = () => {
+    const keys = Object.keys(triviaCategories)
+    const randomNum = randomNumber(0, keys.length)
+    const categoryName = keys[randomNum]
+    return categoryName
+}
+
+export const getTriviaApiResponse = async (
+    categoryName, 
+    amount,
+    difficulty,
+    type
+    ) => {
+        const category = triviaCategories[categoryName]
+        let url = `https://opentdb.com/api.php?amount=${amount}`
+        if (categoryName) {
+            url += `&category=${category}`
+        }
+        if (difficulty) {
+            url += `&difficulty=${difficulty}`
+        }
+        if (type) {
+            url += `&type=${type}`
+        }
+       try {
+        const response = await axios.get(url)
+        if (response.status === 200) {
+            return response.data
+        }
+       } catch (e) {
+        console.log(e)
+       }
 }

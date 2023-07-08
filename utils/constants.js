@@ -15,6 +15,8 @@ export const gameTypes = {
 
 export const triviaCategories = {
     GeneralKnowledge: 9,
+    Books: 10,
+    Film: 11,
     Music: 12
 }
 
@@ -26,10 +28,26 @@ export const difficulties = {
 
 export const defaultGameSettings = {
     battleRoyale: {
-        maxPlayers: 100
+        maxPlayers: 100,
+        rules: {
+            isPractice: false,
+            useBots: false,
+            rounds: 3,
+            eliminatePlayers: true,
+            difficulty: difficulties.MEDIUM,
+            type: gameTypes.CLASSIC
+        }
     },
     deathMatch: {
-        maxPlayers: 2
+        maxPlayers: 2,
+        rules: {
+            isPractice: false,
+            useBots: false,
+            rounds: 3,
+            eliminatePlayers: false,
+            difficulty: difficulties.MEDIUM,
+            type: gameTypes.CLASSIC
+        }
     }
 }
 
@@ -63,7 +81,7 @@ export const ranks = {
     PLATINUM: 'PLATINUM',
     DIAMOND: 'DIAMOND',
     CHAMPION: 'CHAMPION',
-    MATHEMATICIAN: 'MATHEMATICIAN'
+    GENIUS: 'GENIUS'
 }
 
 export const rankedOrder = [
@@ -74,12 +92,13 @@ export const rankedOrder = [
     ranks.PLATINUM,
     ranks.DIAMOND,
     ranks.CHAMPION,
-    ranks.MATHEMATICIAN
+    ranks.GENIUS
 ]
 
 export const socketEvents = {
     connectEvents: {
-        registerSocketId: 'registerSocketId'
+        registerSocketId: 'registerSocketId',
+        rejoinGameAfterDisconnect: 'rejoinGameAfterDisconnect',
     },
     friendEvents: {
         sendFriendRequest: 'sendFriendRequest',
@@ -112,17 +131,19 @@ export const socketEvents = {
         creatorStartedCustomGame: 'creatorStartedCustomGame'
     },
     gameEvents: {
+        eliminatedFromMatch: 'eliminatedFromMatch',
+        joinMatch: 'joinMatch',
+        startMatch: 'startMatch',
+        leaveMatch: 'leaveMatch',
+        submitAnswer: 'submitAnswer',
         battleRoyale: {
-            eliminatedFromMatch: 'eliminatedFromMatch',
             joinBattleRoyaleQueue: 'joinBattleRoyaleQueue',
             leaveBattleRoyaleQueue: 'leaveBattleRoyaleQueue'
         },
         deathmatch: {
             joinDeathmatchQueue: 'joinDeathmatchQueue',
             leaveDeathmatchQueue: 'leaveDeathmatchQueue'
-        },
-        leaveMatch: 'leaveMatch',
-        submitAnswer: 'submitAnswer'
+        }
     },
     statusEvents: {
         updateStatus: 'updateStatus'

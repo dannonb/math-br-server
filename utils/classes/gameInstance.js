@@ -1,5 +1,7 @@
 import { io } from "../../server.js"
-import { gameStatus } from "../constants.js"
+import { gameStatus, socketEvents } from "../constants.js"
+
+const { gameEvents } = socketEvents
 
 class GameInstance {
     constructor(gameState, gameData) {
@@ -28,7 +30,7 @@ class GameInstance {
         }
         this.setGameStatus(gameStatus.READY)
         this.saveCurrentStateInDb()
-        io.to(this.gameState.room).emit()
+        io.to(this.gameState.room).emit(gameEvents.joinMatch)
     }
 
     async loop() {
@@ -42,7 +44,7 @@ class GameInstance {
     async playGame() {
         this.setGameStatus(gameStatus.INPROGRESS)
         this.saveCurrentStateInDb()
-        io.to(this.gameState.room).emit()
+        io.to(this.gameState.room).emit(gameEvents.startMatch)
     }
 }
 

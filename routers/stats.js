@@ -7,7 +7,7 @@ const router = new express.Router()
 router.get('/profile/stats', auth,  async (req, res) => {
     const player = req.user
     try {
-        const stats = Stats.findOne({ player: user._id })
+        const stats = Stats.findOne({ player: player._id })
         
     } catch (err) {
         

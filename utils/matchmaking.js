@@ -1,7 +1,16 @@
 import { v4 as uuid4 } from 'uuid'
 
-import { gameModes, rankedOrder, playerStatus, defaultGameSettings } from './constants.js'
-import { createPublicMatchGameStateAndLobby, determineRank, startPublicMatch } from './functions/helpers.js'
+import {
+    gameModes,
+    rankedOrder,
+    playerStatus,
+    defaultGameSettings
+} from './constants.js'
+import {
+    createPublicMatchGameStateAndLobby,
+    determineRank,
+    startPublicMatch
+} from './functions/helpers.js'
 import { handleStatusChange } from './events/eventhandlers/statusChange.js'
 
 const battleRoyaleQueues = []
@@ -118,6 +127,11 @@ class Queue {
 export const handleJoinMatchmaking = async function (player, gamemode) {
     const socket = this
     const playerRank = determineRank(player.stats.mmr)
+    console.log(player.stats.mmr)
+    console.log(playerRank)
+    if (!playerRank) {
+        throw new Error("Player rank is undefined")
+    }
     let existingQueue
     switch (gamemode) {
         case gameModes.BATTLEROYALE:
@@ -144,7 +158,6 @@ export const handleJoinMatchmaking = async function (player, gamemode) {
                 player.currentQueueId = newQueue.id
                 deathMatchQueues.push(newQueue)
             }
-            console.log(deathMatchQueues)
     }
     player.status = playerStatus.MATCHMAKING
     await player.save()
@@ -152,6 +165,7 @@ export const handleJoinMatchmaking = async function (player, gamemode) {
     if (existingQueue) {
         checkForPossibleGameAfterPlayerJoinsQueue(existingQueue)
     }
+    console.log(deathMatchQueues)
 }
 
 export const handleLeaveMatchmaking = async function (player, gamemode) {
@@ -174,7 +188,6 @@ export const handleLeaveMatchmaking = async function (player, gamemode) {
 }
 
 export const getPlayersFromQueue = (queue, numberOfPlayers) => {
-    console.log(queue.gamemode)
     switch (queue.gamemode) {
         case gameModes.BATTLEROYALE:
             const brPlayers = []
@@ -186,7 +199,7 @@ export const getPlayersFromQueue = (queue, numberOfPlayers) => {
                 if (currentRankIndex === -1) return
 
                 const nextRank = rankedOrder[currentRankIndex + 1]
-                const nextRankQueue = battleRoyaleQueues.find(q => q.rank = nextRank)
+                const nextRankQueue = battleRoyaleQueues.find(q => q.rank === nextRank)
 
                 if (nextRankQueue) {
                     const playersFromNextRank = nextRankQueue.getLowestRankedPlayers(numberOfPlayers - brPlayers.length)
@@ -194,7 +207,7 @@ export const getPlayersFromQueue = (queue, numberOfPlayers) => {
                 }
                 if (brPlayers.length < numberOfPlayers) {
                     const lastRank = rankedOrder[currentRankIndex - 1]
-                    const lastRankQueue = battleRoyaleQueues.find(q => q.rank = lastRank)
+                    const lastRankQueue = battleRoyaleQueues.find(q => q.rank === lastRank)
 
                     if (lastRankQueue) {
                         const playersFromLastRank = lastRankQueue.getHighestRankedPlayers(numberOfPlayers - brPlayers.length)
@@ -210,7 +223,7 @@ export const getPlayersFromQueue = (queue, numberOfPlayers) => {
                 const currentRankIndex = rankedOrder.indexOf(queue.rank)
                 if (currentRankIndex === -1) return
                 const nextRank = rankedOrder[currentRankIndex + 1]
-                const nextRankQueue = deathMatchQueues.find(q => q.rank = nextRank)
+                const nextRankQueue = deathMatchQueues.find(q => q.rank === nextRank)
 
                 if (nextRankQueue) {
                     const playersFromNextRank = nextRankQueue.getLowestRankedPlayers(numberOfPlayers - dmPlayers.length)
@@ -218,7 +231,7 @@ export const getPlayersFromQueue = (queue, numberOfPlayers) => {
                 }
                 if (dmPlayers.length < numberOfPlayers) {
                     const lastRank = rankedOrder[currentRankIndex - 1]
-                    const lastRankQueue = deathMatchQueues.find(q => q.rank = lastRank)
+                    const lastRankQueue = deathMatchQueues.find(q => q.rank === lastRank)
 
                     if (lastRankQueue) {
                         const playersFromLastRank = lastRankQueue.getHighestRankedPlayers(numberOfPlayers - dmPlayers.length)
@@ -234,12 +247,11 @@ export const getPlayersFromQueue = (queue, numberOfPlayers) => {
 export const checkForPossibleGameAfterPlayerJoinsQueue = async (queue) => {
     const amountOfPlayersNeededToStart = queue.gamemode === gameModes.BATTLEROYALE ? defaultGameSettings.battleRoyale.maxPlayers : defaultGameSettings.deathMatch.maxPlayers
     try {
-        if (queue.players.length >= amountOfPlayersNeededToStart) {
-            console.log("creating public game lobby")
+        if (
+            queue.players.length >= amountOfPlayersNeededToStart
+        ) {
             const { gameState, game } = await createPublicMatchGameStateAndLobby(queue)
-        
-            console.log(gameState, game)
-    
+
             if (gameState && game) {
                 console.log("STARTING PUB MATCH")
                 startPublicMatch(gameState, game)

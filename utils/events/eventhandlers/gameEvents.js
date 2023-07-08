@@ -2,6 +2,7 @@ import Player from "../../../models/player.js"
 import {
     acknowledgementStatus,
     gameModes,
+    playerStatus,
     socketEvents
 } from "../../constants.js"
 import {
@@ -46,6 +47,11 @@ export const joinDeathmatchQueue = async function ({ playerId }, cb) {
             return cb({
                 status: acknowledgementStatus.error,
                 message: 'An unexpected error occured'
+            })
+        } else if (player.status === playerStatus.MATCHMAKING) {
+            return cb({
+                status: acknowledgementStatus.error,
+                message: 'Already Matchmaking'
             })
         }
         handleJoinMatchmaking(player, gameModes.DEATHMATCH)
