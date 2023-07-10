@@ -42,6 +42,7 @@ router.post('/players/login', async (req, res) => {
 })
 
 router.post('/players/logout', auth, async (req, res) => {
+    console.log("REQ FROM LOGOUT: ", req)
     try {
         req.player.tokens = req.player.tokens.filter((token) => {
             return token.token !== req.token
