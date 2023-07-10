@@ -2,11 +2,12 @@ import jwt from 'jsonwebtoken'
 import Player from '../models/player.js'
 
 const auth = async (req, res, next) => {
-    console.log("REQ FROM MIDDLEWARE: ", req)
     try {
         const token = req.header('Authorization').replace('Bearer ', '')
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
         const player = await Player.findOne({ _id: decoded._id, 'tokens.token': token })
+
+        console.log("PLAYER: ", player)
 
         if (!player) {
             throw new Error()
