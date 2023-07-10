@@ -32,8 +32,9 @@ router.post('/players/register', async (req, res) => {
 
 router.post('/players/login', async (req, res) => {
     try {
-        const player = await Player.findByCredentials(req.body.username, req.body.password).populate('stats')
+        const player = await Player.findByCredentials(req.body.username, req.body.password)
         const token = await player.generateAuthToken()
+        await player.populate('stats')
         res.status(200).send({ player, token })
     } catch (e) {
         res.status(400).send({ error: e._message })
